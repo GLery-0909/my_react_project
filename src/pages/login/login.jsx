@@ -5,6 +5,30 @@ import './css/login.less';
 const { Item } = Form;
 
 class Login extends Component {
+  // 密码校验函数
+  pwdValidator = (rule, value, callback) => {
+    if (!value) {
+      callback('密码为必填项');
+    } else if (value.length > 12) {
+      callback('密码不得超过12位');
+    } else if (value.length < 4) {
+      callback('密码不得少于4位');
+    } else if (!/^\w+$/.test(value)) {
+      callback('密码必须是数字、英文或者下划线组成');
+    } else {
+      callback();
+    }
+  };
+  // 提交表单收集数据
+  handleSubmit = e => {
+    e.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        console.log('Received values of form: ', values);
+      }
+    });
+  };
+
   render() {
     const { getFieldDecorator } = this.props.form;
     return (
@@ -16,6 +40,7 @@ class Login extends Component {
         <div className="content">
           <h1> 用户登录</h1>
           <Form onSubmit={this.handleSubmit} className="login-form">
+            {/* 声明方式验证 */}
             <Item>
               {getFieldDecorator('username', {
                 rules: [
@@ -36,15 +61,19 @@ class Login extends Component {
                 />
               )}
             </Item>
-
+            {/* 自定义校验 */}
             <Item>
-              <Input
-                prefix={
-                  <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
-                }
-                type="password"
-                placeholder="密码"
-              />
+              {getFieldDecorator('password', {
+                rules: [{ validator: this.pwdValidator }]
+              })(
+                <Input
+                  prefix={
+                    <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
+                  }
+                  type="password"
+                  placeholder="密码"
+                />
+              )}
             </Item>
             <Item>
               <Button
