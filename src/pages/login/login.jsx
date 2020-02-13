@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Form, Icon, Input, Button, Checkbox } from 'antd';
+import { Form, Icon, Input, Button } from 'antd';
+import axios from 'axios';
 import logo from './imgs/logo.png';
 import './css/login.less';
 const { Item } = Form;
@@ -24,7 +25,24 @@ class Login extends Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
+        // 发送请求
+        // console.log('Received values of form: ', values);
+        const { username, password } = values;
+        axios
+          .post(
+            // 注意跨域问题
+            'http://localhost:3000/login',
+            // 这种携带参数方式不会打成json
+            `username=${username}&password=${password}`
+          )
+          .then(
+            response => {
+              console.log(response.data);
+            },
+            error => {
+              console.log(error);
+            }
+          );
       }
     });
   };
