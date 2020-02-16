@@ -2,12 +2,20 @@ import React, { Component } from 'react';
 import { Form, Icon, Input, Button, message } from 'antd';
 import logo from './imgs/logo.png';
 import './css/login.less';
-import { reqLogin } from '../../api/index';
+import { reqLogin } from '../../api';
 import { connect } from 'react-redux';
 import { createSaveUserInfoAction } from '../../redux/actions/login';
-import { Redirect } from 'react-router-dom';
+import check from '../check/check';
 const { Item } = Form;
 
+@connect(
+  state => ({
+    userInfo: state.userInfo
+  }),
+  { saveUserInfo: createSaveUserInfoAction }
+)
+@Form.create()
+@check
 class Login extends Component {
   // 密码校验函数
   pwdValidator = (rule, value, callback) => {
@@ -46,10 +54,8 @@ class Login extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { isLogin } = this.props.userInfo;
-    if (isLogin) {
-      return <Redirect to="/admin" />;
-    }
+    //const {isLogin} = this.props.userInfo
+    //if(isLogin) return <Redirect to="/admin"/>
     return (
       <div id="login">
         <div className="header">
@@ -57,18 +63,25 @@ class Login extends Component {
           <h1>商品管理系统</h1>
         </div>
         <div className="content">
-          <h1> 用户登录</h1>
+          <h1>用户登录</h1>
           <Form onSubmit={this.handleSubmit} className="login-form">
-            {/* 声明方式验证 */}
             <Item>
+              {/* 
+								用户名/密码的的合法性要求
+									1). 必须输入
+									2). 必须大于等于4位
+									3). 必须小于等于12位
+									4). 必须是英文、数字或下划线组成
+							*/}
+              {/* getFieldDecorator('给要装饰的域起个名字',{rules:[{规则1},{{规则2}}]})(要装饰的内容) */}
               {getFieldDecorator('username', {
                 rules: [
                   { required: true, message: '用户名必须输入' },
-                  { max: 12, message: '用户名必须小于或等于12位' },
-                  { min: 4, message: '用户名必须大于或等于4位' },
+                  { max: 12, message: '用户名必须小于等于12位' },
+                  { min: 4, message: '用户名必须大于等于4位' },
                   {
                     pattern: /^\w+$/,
-                    message: '用户名必须是数字、英文或者下划线组成'
+                    message: '用户名必须是英文、数字或下划线组成'
                   }
                 ]
               })(
@@ -80,10 +93,9 @@ class Login extends Component {
                 />
               )}
             </Item>
-            {/* 自定义校验 */}
             <Item>
               {getFieldDecorator('password', {
-                rules: [{ validator: this.pwdValidator }]
+                rules: [{ validator: this.passwordValidator }]
               })(
                 <Input
                   prefix={
@@ -110,9 +122,4 @@ class Login extends Component {
   }
 }
 
-export default connect(
-  state => ({
-    userInfo: state.userInfo
-  }),
-  { saveUserInfo: createSaveUserInfoAction }
-)(Form.create()(Login));
+export default Login;

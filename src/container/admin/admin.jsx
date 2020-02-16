@@ -1,29 +1,24 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
-import { createDeleteUserInfoAction } from '../../redux/actions/login';
+import check from '../check/check';
+import { Layout } from 'antd';
+import Header from '../header/header';
+import './admin.less';
+const { Footer, Sider, Content } = Layout;
 
+@check
 class Admin extends Component {
-  logout = () => {
-    this.props.deleteUserInfo();
-  };
-
   render() {
-    const { isLogin } = this.props.userInfo;
-    if (!isLogin) {
-      // this.props.history.replace('./login');
-      // 一般在render中用这种标签的形式跳转
-      return <Redirect to="./login" />;
-    }
     return (
-      <div>
-        欢迎登录！{this.props.userInfo.user.username}
-        <button onClick={this.logout}>退出登录</button>
-      </div>
+      <Layout className="layout">
+        <Sider>Sider</Sider>
+        <Layout>
+          <Header />
+          <Content style={{ backgroundColor: 'orange' }}>Content</Content>
+          <Footer>Footer</Footer>
+        </Layout>
+      </Layout>
     );
   }
 }
 
-export default connect(state => ({ userInfo: state.userInfo }), {
-  deleteUserInfo: createDeleteUserInfoAction
-})(Admin);
+export default Admin;
