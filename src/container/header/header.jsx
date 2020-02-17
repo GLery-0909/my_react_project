@@ -5,11 +5,13 @@ import { connect } from 'react-redux';
 import { reqWeather } from '../../api';
 import dayjs from 'dayjs';
 import { createDeleteUserInfoAction } from '../../redux/actions/login';
+import { createDeleteTitleAction } from '../../redux/actions/header';
 import './header.less';
 const { confirm } = Modal;
 
-@connect(state => ({ userInfo: state.userInfo }), {
-  deleteUserInfo: createDeleteUserInfoAction
+@connect(state => ({ userInfo: state.userInfo, title: state.headerTitle }), {
+  deleteUserInfo: createDeleteUserInfoAction,
+  deleteTitle: createDeleteTitleAction
 })
 class Header extends Component {
   state = {
@@ -28,6 +30,7 @@ class Header extends Component {
       cancelText: '取消',
       onOk: () => {
         this.props.deleteUserInfo();
+        this.props.deleteTitle();
       }
     });
   };
@@ -73,7 +76,7 @@ class Header extends Component {
         </div>
         <div className="header-bottom">
           <div className="bottom-left">
-            <span>首页</span>
+            <span>{this.props.title}</span>
           </div>
           <div className="bottom-right">
             <span>{this.state.date}</span>

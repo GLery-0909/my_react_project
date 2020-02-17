@@ -2,3 +2,11 @@
   height: 100%;
   color: white;
 }
+.layout .content {
+  background-color: white;
+  color: black;
+  margin: 20px 20px 0px 20px;
+}
+.layout .footer {
+  text-align: center;
+}

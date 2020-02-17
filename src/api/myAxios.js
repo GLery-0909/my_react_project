@@ -5,11 +5,18 @@ import { BASE_URL } from '../config/index';
 // 进度条效果
 import Nprogress from 'nprogress';
 import 'nprogress/nprogress.css';
+import store from '../redux/store';
+import { createDeleteTitleAction } from '../redux/actions/header';
+import { createDeleteUserInfoAction } from '../redux/actions/login';
 
 axios.defaults.baseURL = BASE_URL;
 
 // axios请求拦截器
 axios.interceptors.request.use(config => {
+  if (store.getState().userInfo.token) {
+    const { token } = store.getState().userInfo;
+    config.headers.Authorization = 'atguigu_' + token;
+  }
   Nprogress.start();
   const { method, data } = config;
   // 转化为urlencoded编码形式
@@ -28,8 +35,14 @@ axios.interceptors.response.use(
   },
   err => {
     Nprogress.done();
-    message.warning(err.message);
-    // return Promise.reject(error.message);
+    // 401错误 登录过期
+    if (err.response.status === 401) {
+      message.error('请重新登录!');
+      store.dispatch(createDeleteTitleAction());
+      store.dispatch(createDeleteUserInfoAction());
+    } else {
+      message.error('请求失败，请联系管理员！');
+    }
     return new Promise(() => {});
   }
 );
